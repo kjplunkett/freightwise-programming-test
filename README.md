@@ -9,10 +9,10 @@ Preview: https://kjplunkett.github.io/freightwise-programming-test/
 - [x] Fetch weather data
 - [x] Render data to DOM
 - [x] Handle errors and render to DOM
-- [ ] Style output and errors
+- [x] Style output and errors
 - [x] Fix any errors discovered in the existing code and document problem/solution
 - [x] Deploy
-- [ ] Email link
+- [x] Email link
 
 ## Nice to have
 

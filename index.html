@@ -62,6 +62,9 @@
                 // which led to this.setResults() having no effect
                 // FIX: We know only 1 DOM node will have the class name 'test-results' so get the 0th item
                 this.testResults = document.getElementsByClassName('test-results')[0];
+
+                // Reference the DOM node we need to render error results into
+                this.errorResults = document.getElementsByClassName('error-results')[0];
             }
 
             async run() {
@@ -132,8 +135,7 @@
              * @param {String} message error message from failure to get weather data
              */
             setError(message) {
-                // TODO: Format the error
-                this.testResults.innerHTML = (message || '').toString();
+                this.errorResults.innerHTML = `An error occurred getting weather data: ${message}` || '';
             }
 
             /**
@@ -141,13 +143,49 @@
              * @param {String} results weather data description
              */
             setResults(results) {
-                // TODO: Format the results
-                this.testResults.innerHTML = (results || '').toString();
+                this.testResults.innerHTML = `Currently ${results}` || '';
             }
         }
     </script>
 
     <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to left top, #a2cdeb, #092d46);
+        }
+
+        header {
+            color: #ffffff;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1em;
+        }
+
+        .test-results {
+            font-weight: bolder;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .error-results {
+            font-weight: lighter;
+            text-align: center;
+            color: black;
+        }
+
         .button-container {
             text-align: center;
         }
@@ -155,8 +193,8 @@
         .button-container > button {
             margin: 0;
             padding: 10px 18px;
-            color: white;
-            background-color: #008000;
+            color: #fff;
+            background-color: #092d46;
             border: none;
             border-radius: 3px;
             transition: all 200ms ease-in-out;
@@ -164,20 +202,29 @@
         }
 
         .button-container > button:hover {
-            background-color: #00A000;
+            background-color: #a2cdeb;
         }
 
         .button-container > button:active {
-            background-color: #006000;
+            background-color: #092d46;
         }
     </style>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 <body>
-    <div class="test-results"></div>
+    <header>
+        <h1>Brentwood Weather</h1>
+    </header>
 
-    <div class="button-container"></div>
+    <main>
+        <div class="button-container"></div>
+        <div class="test-results"></div>
+    </main>
+
+    <footer>
+        <div class="error-results"></div>
+    </footer>
 
     <script>
         'use strict';
@@ -193,7 +240,7 @@
             let testButton = document.createElement('button');
 
             testButton.type = 'button';
-            testButton.innerText = 'Get the Nashville Weather';
+            testButton.innerText = 'Get the weather in Brentwood';
             testButton.onclick = () => test.run();
 
             context.appendChild(testButton);
