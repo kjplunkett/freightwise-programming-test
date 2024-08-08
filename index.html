@@ -67,14 +67,19 @@
             async run() {
                 console.log(new Date().toISOString(), '[Test]', 'Running the test');
 
-                // Get location data we need from the Weather API
-                const location = await this.fetchLocation('Brentwood', 'TN', 'us');
+                try {
+                    // Get location data we need from the Weather API
+                    const location = await this.fetchLocation('Brentwood', 'TN', 'us');
 
-                // Get the weather data we need from the Data API
-                const weather = await this.fetchWeather(location.lat, location.lon);
+                    // Get the weather data we need from the Data API
+                    const weather = await this.fetchWeather(location.lat, location.lon);
 
-                // Render the weather data
-                this.setResults(weather.description);
+                    // Render the weather data
+                    this.setResults(weather.description);
+                } catch (error) {
+                    // Render the error data
+                    this.setError(error.message);
+                }
             }
 
             /**
@@ -87,21 +92,17 @@
              * @returns {Promise<Object>} Location object containing lat and lon Number values
              */
             async fetchLocation(city, state, country) {
-                try {
-                    // Get the axios response object from the GET request
-                    const response = await axios.get(`${OPEN_WEATHER_API_BASE_URL}/geo/1.0/direct`, {
-                        params: {
-                            q: `${city}, ${state}, ${country}`,
-                            limit: 1,
-                            appId: OPEN_WEATHER_API_KEY,
-                        },
-                    });
+                // Get the axios response object from the GET request
+                const response = await axios.get(`${OPEN_WEATHER_API_BASE_URL}/geo/1.0/direct`, {
+                    params: {
+                        q: `${city}, ${state}, ${country}`,
+                        limit: 1,
+                        appId: OPEN_WEATHER_API_KEY,
+                    },
+                });
 
-                    // API returns a list and we limit to 1 so just get the first item
-                    return response.data[0];
-                } catch (error) {
-                    console.error(error);
-                }
+                // API returns a list and we limit to 1 so just get the first item
+                return response.data[0];
             }
 
             /**
@@ -113,28 +114,32 @@
              * @returns {Promise<Object>} Weather data for the desired location
              */
             async fetchWeather(lat, lon) {
-                try {
-                    // Get the axios response object from the GET request
-                    const response = await axios.get(`${OPEN_WEATHER_API_BASE_URL}/data/2.5/weather`, {
-                        params: {
-                            lat: lat,
-                            lon: lon,
-                            appId: OPEN_WEATHER_API_KEY,
-                        },
-                    });
+                // Get the axios response object from the GET request
+                const response = await axios.get(`${OPEN_WEATHER_API_BASE_URL}/data/2.5/weather`, {
+                    params: {
+                        lat: lat,
+                        lon: lon,
+                        appId: OPEN_WEATHER_API_KEY,
+                    },
+                });
 
-                    // API returns a list of weather items, return the first
-                    return response.data.weather[0];
-                } catch (error) {
-                    console.error(error);
-                }
+                // API returns a list of weather items, return the first
+                return response.data.weather[0];
             }
 
+            /**
+             * Render the error by setting innerHTML on the testResults <div>
+             * @param {String} message error message from failure to get weather data
+             */
             setError(message) {
                 // TODO: Format the error
                 this.testResults.innerHTML = (message || '').toString();
             }
 
+            /**
+             * Render the results by setting innerHTML on the testResults <div>
+             * @param {String} results weather data description
+             */
             setResults(results) {
                 // TODO: Format the results
                 this.testResults.innerHTML = (results || '').toString();
