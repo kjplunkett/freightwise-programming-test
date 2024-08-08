@@ -49,15 +49,85 @@
          * - Show a satellite map of the weather in Brentwood.
          * - Request a user's phone number and send them an SMS with the weather.
          */
+
+        // Base URL for OpenWeather APIs
+        const OPEN_WEATHER_API_BASE_URL = 'https://api.openweathermap.org'
+        // In the real world you would NOT want this api key exposed in client side JS
+        const OPEN_WEATHER_API_KEY = 'c75f89dee2df592ecb5f3386294f4add';
+
         class Test {
             constructor() {
-                this.testResults = document.getElementsByClassName('test-results');
+                // BUG: getElementsByClassName() returns an HTML collection
+                // Existing code was not selecting an item from the list before referencing the innerHTML property
+                // which led to this.setResults() having no effect
+                // FIX: We know only 1 DOM node will have the class name 'test-results' so get the 0th item
+                this.testResults = document.getElementsByClassName('test-results')[0];
             }
 
             async run() {
                 console.log(new Date().toISOString(), '[Test]', 'Running the test');
 
-                // TODO: Make the API call and handle the results
+                // Get location data we need from the Weather API
+                const location = await this.fetchLocation('Brentwood', 'TN', 'us');
+
+                // Get the weather data we need from the Data API
+                const weather = await this.fetchWeather(location.lat, location.lon);
+
+                // Render the weather data
+                this.setResults(weather.description);
+            }
+
+            /**
+             * Get the location data (lat and lon) for a given city, state, and country from OpenWeather
+             * https://openweathermap.org/api/geocoding-api
+             *
+             * @param {String} city the city name
+             * @param {String} state the state/province
+             * @param {String} country the country code
+             * @returns {Promise<Object>} Location object containing lat and lon Number values
+             */
+            async fetchLocation(city, state, country) {
+                try {
+                    // Get the axios response object from the GET request
+                    const response = await axios.get(`${OPEN_WEATHER_API_BASE_URL}/geo/1.0/direct`, {
+                        params: {
+                            q: `${city}, ${state}, ${country}`,
+                            limit: 1,
+                            appId: OPEN_WEATHER_API_KEY,
+                        },
+                    });
+
+                    // API returns a list and we limit to 1 so just get the first item
+                    return response.data[0];
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            /**
+             * Get the current weather data given a latitude and longitude from OpenWeather
+             * https://openweathermap.org/current
+             *
+             * @param {Number} lat latitude float for the desired weather location
+             * @param {Number} lon longitude float for the desired weather location
+             * @returns {Promise<Object>} Weather data for the desired location
+             */
+            async fetchWeather(lat, lon) {
+                try {
+                    // Get the axios response object from the GET request
+                    const response = await axios.get(`${OPEN_WEATHER_API_BASE_URL}/data/2.5/weather`, {
+                        params: {
+                            lat: lat,
+                            lon: lon,
+                            appId: OPEN_WEATHER_API_KEY,
+                        },
+                    });
+
+                    // API returns a list of weather items, return the first
+                    return response.data.weather[0];
+                } catch (error) {
+                    console.error(error);
+                }
             }
 
             setError(message) {

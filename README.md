@@ -1,13 +1,17 @@
 # Freightwise Programming Test
 
+Render current weather in Brentwood
+
+Preview: https://kjplunkett.github.io/freightwise-programming-test/
+
 ## TODO
 
-- [ ] Fetch weather data
-- [ ] Render data to DOM
+- [x] Fetch weather data
+- [x] Render data to DOM
 - [ ] Handle errors and render to DOM
 - [ ] Style output and errors
-- [ ] Fix any errors discovered in the existing code and document problem/solution
-- [ ] Deploy
+- [x] Fix any errors discovered in the existing code and document problem/solution
+- [x] Deploy
 - [ ] Email link
 
 ## Nice to have
